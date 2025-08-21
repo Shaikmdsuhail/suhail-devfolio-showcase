@@ -6,7 +6,21 @@ import { Card, CardContent } from "@/components/ui/card";
 export const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const scrollToContact = () => {
+    const element = document.getElementById('contact');
+    element?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const quickLinks = [
+    {
+      icon: MessageCircle,
+      label: "Contact Form",
+      action: () => {
+        scrollToContact();
+        setIsOpen(false);
+      },
+      color: "hover:bg-secondary/20 hover:text-secondary"
+    },
     {
       icon: Mail,
       label: "Email",
@@ -34,7 +48,10 @@ export const FloatingContact = () => {
   ];
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div 
+      className="fixed bottom-6 right-6 z-50"
+      onMouseLeave={() => setIsOpen(false)}
+    >
       {/* Quick Links Card */}
       {isOpen && (
         <Card className="mb-4 shadow-xl animate-slide-up">
@@ -50,8 +67,12 @@ export const FloatingContact = () => {
                   size="sm"
                   className={`w-full justify-start transition-all duration-200 ${link.color}`}
                   onClick={() => {
-                    window.open(link.href, link.href.startsWith('http') ? '_blank' : '_self');
-                    setIsOpen(false);
+                    if (link.action) {
+                      link.action();
+                    } else if (link.href) {
+                      window.open(link.href, link.href.startsWith('http') ? '_blank' : '_self');
+                      setIsOpen(false);
+                    }
                   }}
                 >
                   <link.icon className="mr-2 h-4 w-4" />
@@ -65,8 +86,15 @@ export const FloatingContact = () => {
 
       {/* Floating Action Button */}
       <Button
-        onClick={() => setIsOpen(!isOpen)}
-        className="h-14 w-14 rounded-full bg-secondary hover:bg-secondary-dark shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+        onClick={() => {
+          if (!isOpen) {
+            scrollToContact();
+          } else {
+            setIsOpen(false);
+          }
+        }}
+        onMouseEnter={() => setIsOpen(true)}
+        className="h-14 w-14 rounded-full bg-secondary hover:bg-secondary-dark shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group"
       >
         {isOpen ? (
           <X className="h-6 w-6" />
